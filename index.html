@@ -3,92 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Exiozz | Créateur d'expériences Roblox</title>
-    <!-- Font Awesome Icons (CDN) -->
+    <title>Exiozz • Créateur d'univers Roblox</title>
+    <!-- Font Awesome 6 (gratuit) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <!-- Google Fonts : Poppins + Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- GSAP pour animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none; /* cache le curseur par défaut pour le perso */
+            cursor: none;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #050b14;
-            color: #eef5ff;
+            font-family: 'Inter', 'Poppins', sans-serif;
+            background-color: #01010c;
+            color: #f0f3ff;
             overflow-x: hidden;
-            line-height: 1.5;
         }
 
-        /* Curseur personnalisé */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #00e0ff;
-            border-radius: 50%;
+        /* Curseur premium */
+        .cursor-dot, .cursor-outline {
             position: fixed;
+            top: 0;
+            left: 0;
             pointer-events: none;
             z-index: 9999;
-            transition: transform 0.1s ease;
+            border-radius: 50%;
+        }
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #00f2ff;
             transform: translate(-50%, -50%);
         }
-        .cursor-follower {
-            width: 8px;
-            height: 8px;
-            background: #00e0ff;
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.15s ease;
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(0, 242, 255, 0.6);
             transform: translate(-50%, -50%);
+            transition: all 0.2s ease-out;
         }
         @media (max-width: 768px) {
-            .cursor, .cursor-follower { display: none; }
+            .cursor-dot, .cursor-outline { display: none; }
             body { cursor: auto; }
         }
 
-        /* Canvas Three.js en arrière-plan */
-        #canvas-container {
+        /* Canvas 3D en arrière-plan */
+        #bg-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.7;
+            opacity: 0.9;
         }
 
-        /* Layout principal */
+        /* Contenu principal */
         .container {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem 2rem;
             position: relative;
             z-index: 2;
         }
 
-        /* Header / Nav */
+        /* Navigation glassmorphique */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            padding: 1rem 0;
-            border-bottom: 1px solid rgba(0, 224, 255, 0.2);
-            margin-bottom: 4rem;
+            padding: 1rem 2rem;
+            background: rgba(10, 20, 40, 0.4);
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            margin-bottom: 3rem;
         }
         .logo {
             font-size: 1.8rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #00e0ff, #7a2eff);
+            background: linear-gradient(135deg, #FFFFFF, #00f2ff, #7a2eff);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            letter-spacing: -1px;
         }
         .nav-links {
             display: flex;
@@ -99,378 +104,348 @@
             color: #eef5ff;
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s;
+            transition: 0.3s;
             font-size: 1rem;
         }
         .nav-links a:hover {
-            color: #00e0ff;
+            color: #00f2ff;
+            text-shadow: 0 0 6px #00f2ff;
         }
-        .btn-contact-nav {
-            background: rgba(0, 224, 255, 0.15);
-            padding: 0.5rem 1.2rem;
+        .btn-nav {
+            background: rgba(0, 242, 255, 0.15);
+            padding: 0.5rem 1.5rem;
             border-radius: 40px;
-            border: 1px solid #00e0ff;
-        }
-        @media (max-width: 700px) {
-            .container { padding: 1.5rem; }
-            nav { flex-direction: column; gap: 1rem; }
-            .nav-links { gap: 1.2rem; flex-wrap: wrap; justify-content: center; }
+            border: 1px solid #00f2ff;
         }
 
-        /* Hero Section */
+        /* Hero section */
         .hero {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            padding: 3rem 0 6rem;
+            padding: 5rem 0 8rem;
+        }
+        .hero-badge {
+            background: rgba(0,242,255,0.2);
+            backdrop-filter: blur(4px);
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #00f2ff;
+            display: inline-block;
         }
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: 4.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #ffffff, #00e0ff);
+            background: linear-gradient(135deg, #ffffff, #00f2ff, #b580ff);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 1rem;
+            line-height: 1.2;
         }
-        .hero .tagline {
+        .hero .glow-text {
             font-size: 1.3rem;
-            color: #b0d4ff;
+            color: #b8deff;
             max-width: 700px;
-            margin-bottom: 2rem;
+            margin: 1.5rem auto;
         }
         .hero-buttons {
             display: flex;
-            gap: 1.2rem;
+            gap: 1.5rem;
             flex-wrap: wrap;
             justify-content: center;
+            margin-top: 1rem;
         }
         .btn {
-            padding: 0.8rem 2rem;
-            border-radius: 40px;
-            font-weight: 600;
+            padding: 0.9rem 2.2rem;
+            border-radius: 50px;
+            font-weight: 700;
             text-decoration: none;
-            transition: all 0.3s ease;
-            border: none;
+            transition: 0.3s;
             font-size: 1rem;
         }
         .btn-primary {
-            background: #00e0ff;
-            color: #050b14;
-            box-shadow: 0 0 12px rgba(0,224,255,0.4);
+            background: linear-gradient(95deg, #00f2ff, #3a0ca3);
+            color: white;
+            box-shadow: 0 0 20px rgba(0,242,255,0.5);
         }
         .btn-primary:hover {
             transform: scale(1.05);
-            background: #00c4e0;
-            box-shadow: 0 0 20px #00e0ff;
+            box-shadow: 0 0 30px #00f2ff;
         }
         .btn-outline {
-            border: 1.5px solid #00e0ff;
-            color: #00e0ff;
+            border: 2px solid #00f2ff;
             background: transparent;
+            color: #00f2ff;
         }
         .btn-outline:hover {
-            background: #00e0ff20;
+            background: #00f2ff20;
             transform: scale(1.05);
         }
 
-        /* Sections génériques */
+        /* Sections générales */
         section {
-            margin-bottom: 6rem;
+            margin-bottom: 8rem;
         }
         .section-title {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 2.5rem;
+            margin-bottom: 3rem;
             position: relative;
             display: inline-block;
         }
         .section-title:after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -12px;
             left: 0;
-            width: 60px;
+            width: 80px;
             height: 4px;
-            background: #00e0ff;
-            border-radius: 2px;
+            background: linear-gradient(90deg, #00f2ff, #7a2eff);
+            border-radius: 4px;
         }
 
-        /* Compétences en cartes */
+        /* Grille compétences 3D hover */
         .skills-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
         }
         .skill-card {
-            background: rgba(15, 25, 45, 0.7);
-            backdrop-filter: blur(8px);
-            border-radius: 24px;
-            padding: 1.8rem;
-            border: 1px solid rgba(0,224,255,0.2);
-            transition: transform 0.3s, border-color 0.3s;
-        }
-        .skill-card:hover {
-            transform: translateY(-8px);
-            border-color: #00e0ff;
-        }
-        .skill-icon {
-            font-size: 2.5rem;
-            color: #00e0ff;
-            margin-bottom: 1rem;
-        }
-        .skill-card h3 {
-            margin-bottom: 0.5rem;
-            font-size: 1.4rem;
-        }
-
-        /* Projets */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-        }
-        .project-card {
-            background: #0a1220;
-            border-radius: 28px;
-            overflow: hidden;
-            border: 1px solid #1e2a3a;
-            transition: all 0.3s;
-        }
-        .project-card:hover {
-            border-color: #00e0ff;
-            transform: translateY(-5px);
-            box-shadow: 0 20px 30px -15px rgba(0,224,255,0.2);
-        }
-        .project-img {
-            background: linear-gradient(135deg, #002233, #001a2a);
-            height: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: #00e0ff;
-        }
-        .project-info {
-            padding: 1.5rem;
-        }
-        .project-info h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .project-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin: 1rem 0;
-        }
-        .project-tags span {
-            background: #00e0ff20;
-            padding: 0.2rem 0.8rem;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #aaf0ff;
-        }
-
-        /* Contact form */
-        .contact-flex {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 3rem;
-            background: rgba(10, 18, 32, 0.6);
+            background: rgba(15, 25, 50, 0.5);
             backdrop-filter: blur(10px);
             border-radius: 32px;
             padding: 2rem;
-            border: 1px solid #1e2a3a;
+            border: 1px solid rgba(0,242,255,0.2);
+            transition: 0.4s;
+            text-align: center;
+        }
+        .skill-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #00f2ff;
+            box-shadow: 0 20px 40px rgba(0,242,255,0.2);
+        }
+        .skill-icon {
+            font-size: 3rem;
+            color: #00f2ff;
+            margin-bottom: 1rem;
+        }
+
+        /* Projets (avec images stylisées) */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2.5rem;
+        }
+        .project-card {
+            background: #0a1022;
+            border-radius: 32px;
+            overflow: hidden;
+            border: 1px solid #1f2a44;
+            transition: 0.4s;
+        }
+        .project-card:hover {
+            transform: translateY(-12px);
+            border-color: #00f2ff;
+            box-shadow: 0 25px 35px -12px rgba(0,242,255,0.3);
+        }
+        .project-img {
+            height: 220px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* images symboliques (tu pourras remplacer les URLs plus tard) */
+        .img-cafe { background-image: linear-gradient(135deg, #2b2d42, #0b132b), url('https://placehold.co/600x400/1a2a3a/00f2ff?text=Stradaz+Cafe'); background-blend-mode: overlay; }
+        .img-rp { background-image: linear-gradient(135deg, #1e2a3a, #0a0f1f), url('https://placehold.co/600x400/1a2a3a/00f2ff?text=RP+Game'); background-blend-mode: overlay; }
+        .img-ai { background-image: linear-gradient(135deg, #2a1e3a, #0a0a1a), url('https://placehold.co/600x400/1a2a3a/00f2ff?text=AI+Enemies'); background-blend-mode: overlay; }
+        .project-img i {
+            font-size: 4rem;
+            color: #00f2ff;
+            background: rgba(0,0,0,0.5);
+            padding: 1rem;
+            border-radius: 60px;
+        }
+        .project-info {
+            padding: 1.8rem;
+        }
+        .project-tags span {
+            background: #00f2ff20;
+            border-radius: 40px;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        /* Contact form glass */
+        .contact-glass {
+            background: rgba(10, 20, 40, 0.5);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 2.5rem;
+            border: 1px solid rgba(0,242,255,0.3);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
         }
         .contact-info {
             flex: 1;
         }
         .contact-info i {
-            color: #00e0ff;
-            margin-right: 1rem;
+            color: #00f2ff;
             width: 2rem;
-        }
-        .contact-info p {
-            margin: 1rem 0;
         }
         .contact-form {
             flex: 1;
         }
-        .input-group {
-            margin-bottom: 1.2rem;
-        }
         input, textarea {
             width: 100%;
-            background: #0a1220;
-            border: 1px solid #2a3a4a;
-            border-radius: 16px;
-            padding: 0.8rem 1rem;
+            background: #0e1628;
+            border: 1px solid #2a3a60;
+            border-radius: 24px;
+            padding: 1rem;
+            margin-bottom: 1rem;
             color: white;
-            font-family: inherit;
-            transition: 0.2s;
         }
         input:focus, textarea:focus {
+            border-color: #00f2ff;
             outline: none;
-            border-color: #00e0ff;
-        }
-        button[type="submit"] {
-            background: #00e0ff;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
         }
 
         footer {
             text-align: center;
-            padding: 2rem 0;
-            border-top: 1px solid #1e2a3a;
-            margin-top: 4rem;
-            color: #88aacc;
+            padding: 2rem;
+            border-top: 1px solid #1f2a44;
+            margin-top: 5rem;
         }
 
-        /* Animation fade up */
+        /* animations fade-up */
         .fade-up {
             opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
         .fade-up.visible {
             opacity: 1;
             transform: translateY(0);
         }
 
-        @media (max-width: 600px) {
-            .hero h1 { font-size: 2.2rem; }
-            .section-title { font-size: 1.8rem; }
+        @media (max-width: 800px) {
+            .container { padding: 1rem; }
+            .hero h1 { font-size: 2.5rem; }
+            nav { flex-direction: column; gap: 1rem; }
+            .nav-links { gap: 1rem; }
         }
     </style>
 </head>
 <body>
 
-<div id="canvas-container"></div>
-
-<div class="cursor"></div>
-<div class="cursor-follower"></div>
+<div id="bg-canvas"></div>
+<div class="cursor-dot"></div>
+<div class="cursor-outline"></div>
 
 <div class="container">
     <nav>
-        <div class="logo">EXIOZZ STUDIOS</div>
+        <div class="logo">EXIOZZ.<span style="color:#00f2ff;">dev</span></div>
         <ul class="nav-links">
-            <li><a href="#accueil">Accueil</a></li>
-            <li><a href="#competences">Compétences</a></li>
-            <li><a href="#projets">Projets</a></li>
-            <li><a href="#contact" class="btn-contact-nav">Contact</a></li>
+            <li><a href="#accueil">🏠 Accueil</a></li>
+            <li><a href="#skills">⚡ Compétences</a></li>
+            <li><a href="#projets">🚀 Projets</a></li>
+            <li><a href="#contact" class="btn-nav">📬 Contact</a></li>
         </ul>
     </nav>
 
     <section id="accueil">
         <div class="hero">
-            <h1>Building Advanced Systems</h1>
-            <div class="tagline">
-                Créateur d'expériences Roblox optimisées, code propre et gameplay immersif.
+            <div class="hero-badge"><i class="fas fa-crown"></i> Roblox Developer • 5+ ans d'expertise</div>
+            <h1>Building Advanced <br> Systems & Worlds</h1>
+            <div class="glow-text">
+                Je crée des expériences Roblox optimisées, scalables et immersives. Code propre, gameplay fluide, 3D épique.
             </div>
             <div class="hero-buttons">
-                <a href="#projets" class="btn btn-primary">Voir mes projets <i class="fas fa-arrow-right"></i></a>
-                <a href="#contact" class="btn btn-outline">Discutons</a>
+                <a href="#projets" class="btn btn-primary"><i class="fas fa-eye"></i> Explorer mes créations</a>
+                <a href="#contact" class="btn btn-outline"><i class="fab fa-discord"></i> Me contacter</a>
             </div>
         </div>
     </section>
 
-    <section id="competences">
-        <h2 class="section-title fade-up">Expertises & Tools</h2>
+    <section id="skills">
+        <h2 class="section-title fade-up">🔥 Compétences de fou</h2>
         <div class="skills-grid">
-            <div class="skill-card fade-up">
-                <div class="skill-icon"><i class="fas fa-tachometer-alt"></i></div>
-                <h3>Performance ⚡</h3>
-                <p>Optimisation des scripts, streaming enabled, LODs, réduction de latence pour des expériences fluides 60+ FPS.</p>
-            </div>
-            <div class="skill-card fade-up">
-                <div class="skill-icon"><i class="fas fa-code"></i></div>
-                <h3>Clean Code 🧼</h3>
-                <p>Lua / Luau structuré, OOP, modules réutilisables, debugging avancé et versioning Git.</p>
-            </div>
-            <div class="skill-card fade-up">
-                <div class="skill-icon"><i class="fas fa-gamepad"></i></div>
-                <h3>Gameplay Design 🎮</h3>
-                <p>Systèmes économiques, quêtes, UI/UX immersives, mécaniques originales pour serveurs massifs.</p>
-            </div>
-            <div class="skill-card fade-up">
-                <div class="skill-icon"><i class="fas fa-cubes"></i></div>
-                <h3>3D & Builds 🏗️</h3>
-                <p>Modélisation rapide sous Roblox Studio, création d’environnements atmosphériques.</p>
-            </div>
+            <div class="skill-card fade-up"><div class="skill-icon"><i class="fas fa-bolt"></i></div><h3>Ultra Performance</h3><p>Scripts optimisés, streaming, 60+ FPS, zéro lag pour serveurs massifs.</p></div>
+            <div class="skill-card fade-up"><div class="skill-icon"><i class="fas fa-code"></i></div><h3>Clean Code & Lua</h3><p>Luau avancé, OOP, modules réutilisables, versioning Git, debugging pro.</p></div>
+            <div class="skill-card fade-up"><div class="skill-icon"><i class="fas fa-gamepad"></i></div><h3>Gameplay Design</h3><p>Systèmes économiques, quêtes dynamiques, UI/XP, mécaniques originales.</p></div>
+            <div class="skill-card fade-up"><div class="skill-icon"><i class="fas fa-cubes"></i></div><h3>Environnements 3D</h3><p>Modélisation studio, terrains immersifs, éclairage réaliste, VFX.</p></div>
         </div>
     </section>
 
     <section id="projets">
-        <h2 class="section-title fade-up">Projets phares</h2>
+        <h2 class="section-title fade-up">✨ Projets phares</h2>
         <div class="projects-grid">
             <div class="project-card fade-up">
-                <div class="project-img"><i class="fas fa-city fa-4x"></i></div>
+                <div class="project-img img-cafe"><i class="fas fa-mug-hot"></i></div>
                 <div class="project-info">
-                    <h3>Stradaz Cafe ☕</h3>
-                    <p>Système de gestion de café avancé : emplois, inventaire, grades, mini‑jeux et progression daily.</p>
-                    <div class="project-tags"><span>Lua</span><span>DataStore</span><span>UI/UX</span></div>
+                    <h3>🍰 Stradaz Cafe</h3>
+                    <p>Système RP café ultraréaliste : gestion d'employés, crafting de pâtisseries, quêtes quotidiennes, classements. +15k visites.</p>
+                    <div class="project-tags"><span>Lua</span><span>DataStore</span><span>UI dynamique</span></div>
                 </div>
             </div>
             <div class="project-card fade-up">
-                <div class="project-img"><i class="fas fa-car-crash fa-4x"></i></div>
+                <div class="project-img img-rp"><i class="fas fa-city"></i></div>
                 <div class="project-info">
-                    <h3>RP Game Framework</h3>
-                    <p>Moteur complet pour jeux de rôle : métiers, véhicules custom, radio, gestion de la faim/soif, inventaire.</p>
-                    <div class="project-tags"><span>Modules</span><span>Optimisation</span><span>Networking</span></div>
+                    <h3>🚔 RP Game Framework</h3>
+                    <p>Moteur complet pour jeux de rôle : métiers (policier, médecin, criminel), véhicules custom, inventaire, radio 3D.</p>
+                    <div class="project-tags"><span>Modules</span><span>Networking</span><span>Raycast</span></div>
                 </div>
             </div>
             <div class="project-card fade-up">
-                <div class="project-img"><i class="fas fa-robot fa-4x"></i></div>
+                <div class="project-img img-ai"><i class="fas fa-robot"></i></div>
                 <div class="project-info">
-                    <h3>AI Enemies System</h3>
-                    <p>Système d'IA comportementale avec pathfinding, attaques en patrouille et boss fights dynamiques.</p>
-                    <div class="project-tags"><span>Mathématiques</span><span>Raycasting</span><span>Animations</span></div>
+                    <h3>🧠 AI Enemies System</h3>
+                    <p>IA comportementale avancée : pathfinding, patrouilles, détection auditive, boss fights avec phases uniques.</p>
+                    <div class="project-tags"><span>Maths</span><span>Animation</span><span>IA</span></div>
                 </div>
             </div>
         </div>
     </section>
 
     <section id="contact">
-        <h2 class="section-title fade-up">Travaillons ensemble</h2>
-        <div class="contact-flex fade-up">
+        <h2 class="section-title fade-up">📡 Parlons de ton projet</h2>
+        <div class="contact-glass fade-up">
             <div class="contact-info">
-                <i class="fas fa-map-marker-alt"></i> <strong>Disponible</strong> : Remote / Freelance<br/><br/>
-                <p><i class="fab fa-discord"></i> exiozz.dev (discord)</p>
-                <p><i class="fas fa-envelope"></i> exiozz.studio@proton.me</p>
-                <p><i class="fab fa-github"></i> github.com/exiozz</p>
-                <div style="margin-top: 2rem;">
-                    <i class="fas fa-star" style="color:gold"></i> +15 projets livrés • 99% satisfaction
+                <i class="fab fa-discord"></i> <strong>exiozz.dev</strong><br><br>
+                <i class="fas fa-envelope"></i> exiozz@proton.me<br><br>
+                <i class="fab fa-github"></i> github.com/exiozz<br><br>
+                <i class="fas fa-globe"></i> Disponible en remote / freelance<br><br>
+                <div style="margin-top: 2rem; background: #00f2ff10; border-radius: 28px; padding: 1rem;">
+                    ⚡ Plus de 20 projets livrés • 100% satisfaction client
                 </div>
             </div>
             <div class="contact-form">
-                <form id="contactForm" action="#" method="post">
-                    <div class="input-group">
-                        <input type="text" id="name" placeholder="Votre pseudo / nom" required>
-                    </div>
-                    <div class="input-group">
-                        <input type="email" id="email" placeholder="Email ou Discord" required>
-                    </div>
-                    <div class="input-group">
-                        <textarea rows="4" placeholder="Décrivez votre projet / besoin..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Envoyer <i class="fas fa-paper-plane"></i></button>
-                    <p id="formFeedback" style="margin-top:1rem; font-size:0.8rem;"></p>
+                <form id="form-contact">
+                    <input type="text" id="name" placeholder="Ton pseudo / nom" required>
+                    <input type="email" id="email" placeholder="Email ou Discord" required>
+                    <textarea rows="4" placeholder="Décris ton idée de jeu, système ou besoin..."></textarea>
+                    <button type="submit" class="btn btn-primary" style="width:100%">Envoyer <i class="fas fa-paper-plane"></i></button>
+                    <p id="form-feedback" style="margin-top: 1rem;"></p>
                 </form>
             </div>
         </div>
     </section>
 
     <footer>
-        <p>© 2026 Exiozz — Créateur d’expériences Roblox. Tous droits réservés.</p>
+        <p>© 2026 Exiozz — Créateur d'expériences Roblox. Le futur du gameplay.</p>
     </footer>
 </div>
 
-<!-- Three.js CDN -->
+<!-- THREE.JS SCENE : GALAXIE + TORE + PARTICULES AVEC COULEURS -->
 <script type="importmap">
     {
         "imports": {
@@ -478,157 +453,179 @@
         }
     }
 </script>
-
 <script type="module">
     import * as THREE from 'three';
 
-    // Setup scene
-    const container = document.getElementById('canvas-container');
+    const canvasContainer = document.getElementById('bg-canvas');
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x050b14);
-    
+    scene.background = new THREE.Color(0x01010c);
+    scene.fog = new THREE.FogExp2(0x01010c, 0.003);
+
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 2, 8);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(0, 2, 12);
     
-    const renderer = new THREE.WebGLRenderer({ alpha: false, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
-    container.appendChild(renderer.domElement);
-    
-    // Stars field (particules)
+    canvasContainer.appendChild(renderer.domElement);
+
+    // 1. Particules étoiles + couleurs
     const starsGeometry = new THREE.BufferGeometry();
-    const starsCount = 1800;
-    const starsPositions = new Float32Array(starsCount * 3);
+    const starsCount = 2500;
+    const starPositions = new Float32Array(starsCount * 3);
+    const starColors = new Float32Array(starsCount * 3);
     for (let i = 0; i < starsCount; i++) {
-        starsPositions[i*3] = (Math.random() - 0.5) * 200;
-        starsPositions[i*3+1] = (Math.random() - 0.5) * 100;
-        starsPositions[i*3+2] = (Math.random() - 0.5) * 80 - 30;
+        starPositions[i*3] = (Math.random() - 0.5) * 400;
+        starPositions[i*3+1] = (Math.random() - 0.5) * 200;
+        starPositions[i*3+2] = (Math.random() - 0.5) * 150 - 50;
+        const color = new THREE.Color().setHSL(0.55 + Math.random() * 0.2, 0.8, 0.6);
+        starColors[i*3] = color.r;
+        starColors[i*3+1] = color.g;
+        starColors[i*3+2] = color.b;
     }
-    starsGeometry.setAttribute('position', new THREE.BufferAttribute(starsPositions, 3));
-    const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.12, transparent: true, opacity: 0.7 });
-    const stars = new THREE.Points(starsGeometry, starsMaterial);
-    scene.add(stars);
-    
-    // Ajout d'une forme abstraite centrale (icône "cube tech")
-    const cubeGeo = new THREE.IcosahedronGeometry(0.8, 0);
-    const materialWire = new THREE.MeshStandardMaterial({ color: 0x00e0ff, wireframe: true, emissive: 0x004466 });
-    const coreMesh = new THREE.Mesh(cubeGeo, materialWire);
-    scene.add(coreMesh);
-    
-    // anneau tournant
-    const ringGeo = new THREE.TorusGeometry(1.2, 0.05, 64, 200);
-    const ringMat = new THREE.MeshStandardMaterial({ color: 0x00aaff, emissive: 0x004466 });
+    starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    starsGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+    const starMaterial = new THREE.PointsMaterial({ size: 0.12, vertexColors: true, transparent: true, opacity: 0.9 });
+    const starsField = new THREE.Points(starsGeometry, starMaterial);
+    scene.add(starsField);
+
+    // 2. Anneau lumineux central
+    const ringGeo = new THREE.TorusGeometry(1.8, 0.08, 128, 300);
+    const ringMat = new THREE.MeshStandardMaterial({ color: 0x00f2ff, emissive: 0x004466, emissiveIntensity: 1.2 });
     const ring = new THREE.Mesh(ringGeo, ringMat);
     scene.add(ring);
     
-    // Lights
-    const ambientLight = new THREE.AmbientLight(0x222222);
-    scene.add(ambientLight);
-    const pointLight = new THREE.PointLight(0x00e0ff, 0.8);
-    pointLight.position.set(2, 3, 4);
-    scene.add(pointLight);
-    const backLight = new THREE.PointLight(0xff44aa, 0.4);
-    backLight.position.set(-2, 1, -3);
-    scene.add(backLight);
+    const ring2Geo = new THREE.TorusGeometry(2.2, 0.05, 128, 300);
+    const ringMat2 = new THREE.MeshStandardMaterial({ color: 0xff44cc, emissive: 0x551133 });
+    const ring2 = new THREE.Mesh(ring2Geo, ringMat2);
+    scene.add(ring2);
     
-    // animation
+    // 3. Noyau lumineux (sphère avec effet)
+    const coreMat = new THREE.MeshStandardMaterial({ color: 0x00aaff, emissive: 0x0088ff, emissiveIntensity: 1.5, roughness: 0.2 });
+    const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.9, 0), coreMat);
+    scene.add(core);
+    
+    // 4. Petites particules tournoyantes autour
+    const particleCount = 800;
+    const particleGeo = new THREE.BufferGeometry();
+    const particlePos = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+        const radius = 2.6;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        particlePos[i*3] = radius * Math.sin(phi) * Math.cos(theta);
+        particlePos[i*3+1] = radius * Math.sin(phi) * Math.sin(theta);
+        particlePos[i*3+2] = radius * Math.cos(phi);
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+    const particleMat = new THREE.PointsMaterial({ color: 0x88ddff, size: 0.05 });
+    const particleSystem = new THREE.Points(particleGeo, particleMat);
+    scene.add(particleSystem);
+    
+    // Lumières
+    const ambient = new THREE.AmbientLight(0x111122);
+    scene.add(ambient);
+    const pointLight1 = new THREE.PointLight(0x00f2ff, 1);
+    pointLight1.position.set(2, 3, 4);
+    scene.add(pointLight1);
+    const pointLight2 = new THREE.PointLight(0xff44aa, 0.6);
+    pointLight2.position.set(-2, 1, -3);
+    scene.add(pointLight2);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight.position.set(1, 2, 1);
+    scene.add(dirLight);
+    
+    // Animation
     let time = 0;
     function animate() {
         requestAnimationFrame(animate);
         time += 0.008;
-        stars.rotation.y = time * 0.05;
-        stars.rotation.x = Math.sin(time * 0.1) * 0.1;
-        coreMesh.rotation.x = time * 0.5;
-        coreMesh.rotation.y = time * 0.8;
-        ring.rotation.x = time * 0.3;
-        ring.rotation.z = time * 0.2;
-        camera.position.x = Math.sin(time * 0.1) * 0.3;
-        camera.lookAt(0, 0.5, 0);
+        
+        starsField.rotation.y = time * 0.03;
+        starsField.rotation.x = Math.sin(time * 0.1) * 0.1;
+        
+        ring.rotation.x = time * 0.2;
+        ring.rotation.z = time * 0.3;
+        ring2.rotation.x = time * 0.15;
+        ring2.rotation.y = time * 0.2;
+        
+        core.rotation.x = time * 0.5;
+        core.rotation.y = time * 0.7;
+        
+        particleSystem.rotation.y = time * 0.1;
+        particleSystem.rotation.x = time * 0.05;
+        
+        camera.position.x = Math.sin(time * 0.1) * 0.4;
+        camera.lookAt(0, 0, 0);
+        
         renderer.render(scene, camera);
     }
     animate();
     
-    window.addEventListener('resize', onWindowResize, false);
-    function onWindowResize() {
+    window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-    }
+    });
 </script>
 
 <script>
-    // Curseur custom
-    const cursor = document.querySelector('.cursor');
-    const follower = document.querySelector('.cursor-follower');
-    if(cursor && follower) {
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-            follower.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+    // Curseur personnalisé fluide
+    const dot = document.querySelector('.cursor-dot');
+    const outline = document.querySelector('.cursor-outline');
+    if(dot && outline) {
+        window.addEventListener('mousemove', (e) => {
+            dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+            outline.style.transform = `translate(${e.clientX}px, ${e.clientY}px) scale(1)`;
         });
-        // effet hover sur les clics
-        const hoverables = document.querySelectorAll('a, button, .btn, .project-card, .skill-card');
-        hoverables.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursor.style.transform += ' scale(1.8)';
-                follower.style.transform += ' scale(1.5)';
-                cursor.style.borderColor = '#ffffff';
-            });
-            el.addEventListener('mouseleave', () => {
-                cursor.style.transform = cursor.style.transform.replace(' scale(1.8)', '');
-                follower.style.transform = follower.style.transform.replace(' scale(1.5)', '');
-                cursor.style.borderColor = '#00e0ff';
-            });
+        const links = document.querySelectorAll('a, button, .btn, .project-card, .skill-card');
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => outline.style.transform += ' scale(1.8)');
+            link.addEventListener('mouseleave', () => outline.style.transform = outline.style.transform.replace(' scale(1.8)', ''));
         });
     }
-
-    // Scroll reveal (fade-up)
+    
+    // Scroll reveal GSAP
+    gsap.registerPlugin(ScrollTrigger);
     const faders = document.querySelectorAll('.fade-up');
-    const appearOptions = { threshold: 0.2, rootMargin: "0px 0px -40px 0px" };
-    const appearOnScroll = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if(entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                appearOnScroll.unobserve(entry.target);
-            }
-        });
-    }, appearOptions);
-    faders.forEach(fader => appearOnScroll.observe(fader));
-    
-    // Formulaire (simulation, mais avec message)
-    const form = document.getElementById('contactForm');
-    if(form) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const feedback = document.getElementById('formFeedback');
-            if(!name || !email) {
-                feedback.innerHTML = '<span style="color:#ff7777;">❌ Merci de remplir nom et email/discord.</span>';
-                return;
-            }
-            feedback.innerHTML = '<span style="color:#00e0ff;">✨ Message envoyé ! Je reviens vers toi rapidement.</span>';
-            form.reset();
-            setTimeout(() => { feedback.innerHTML = ''; }, 4000);
-        });
-    }
-    
-    // Smooth scroll pour ancres
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            if(targetId === "#") return;
-            const target = document.querySelector(targetId);
-            if(target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+    faders.forEach(el => {
+        gsap.fromTo(el, { autoAlpha: 0, y: 40 }, {
+            duration: 0.8,
+            y: 0,
+            autoAlpha: 1,
+            scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" }
         });
     });
     
-    // petite astuce pour éviter que le canvas 3D ne capte les clics
-    const containerDiv = document.getElementById('canvas-container');
-    if(containerDiv) containerDiv.style.pointerEvents = 'none';
+    // Formulaire simulation
+    const contactForm = document.getElementById('form-contact');
+    if(contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const feedback = document.getElementById('form-feedback');
+            if(!name || !email) {
+                feedback.innerHTML = '<span style="color:#ff7777;">⚠️ Remplis les infos !</span>';
+                return;
+            }
+            feedback.innerHTML = '<span style="color:#00f2ff;">✅ Message envoyé — je te réponds sous 24h !</span>';
+            contactForm.reset();
+            setTimeout(() => feedback.innerHTML = '', 4000);
+        });
+    }
+    
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+    
+    // Forcer le canvas en arrière-plan
+    document.getElementById('bg-canvas').style.pointerEvents = 'none';
 </script>
 </body>
 </html>
